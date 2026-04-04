@@ -1,0 +1,26 @@
+{
+  "description": "睡眠故事创作历史记录，用于去重和个性化优化",
+  "lastCreated": null,
+  "usedElements": {
+    "scenes": [],
+    "characters": [],
+    "journeys": [],
+    "discoveries": [],
+    "sensoryFocus": []
+  },
+  "storyTypes": [],
+  "techniques": [],
+  "templates": [],
+  "userPreferences": {
+    "favoriteTypes": [],
+    "favoriteScenes": [],
+    "favoriteCharacters": [],
+    "preferredLength": "1500-2000",
+    "preferredPace": "slow",
+    "notes": []
+  },
+  "effectiveness": {
+    "totalStories": 0,
+    "userFeedback": []
+  }
+}

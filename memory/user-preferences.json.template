@@ -1,0 +1,112 @@
+{
+  "version": "1.0",
+  "lastUpdated": null,
+  "totalStories": 0,
+  
+  "storyTypePreferences": {
+    "自然风景类": {
+      "count": 0,
+      "avgRating": 0,
+      "lastUsed": null,
+      "favoriteElements": []
+    },
+    "温馨日常类": {
+      "count": 0,
+      "avgRating": 0,
+      "lastUsed": null,
+      "favoriteElements": []
+    },
+    "动物伙伴类": {
+      "count": 0,
+      "avgRating": 0,
+      "lastUsed": null,
+      "favoriteElements": []
+    },
+    "童年回忆类": {
+      "count": 0,
+      "avgRating": 0,
+      "lastUsed": null,
+      "favoriteElements": []
+    },
+    "奇幻治愈类": {
+      "count": 0,
+      "avgRating": 0,
+      "lastUsed": null,
+      "favoriteElements": []
+    },
+    "季节限定类": {
+      "count": 0,
+      "avgRating": 0,
+      "lastUsed": null,
+      "favoriteElements": []
+    }
+  },
+  
+  "elementPreferences": {
+    "scenes": {},
+    "characters": {},
+    "journeys": {},
+    "discoveries": {},
+    "sensoryFocus": {}
+  },
+  
+  "stylePreferences": {
+    "length": {
+      "preferred": "1500-2000",
+      "options": ["1000-1500", "1500-2000", "2000-2500", "2500+"]
+    },
+    "pace": {
+      "preferred": "slow",
+      "options": ["very-slow", "slow", "medium", "fast"]
+    },
+    "hypnosisDepth": {
+      "preferred": "medium",
+      "options": ["light", "medium", "deep"]
+    },
+    "dialogueRatio": {
+      "preferred": "low",
+      "options": ["none", "low", "medium", "high"]
+    }
+  },
+  
+  "psychologyTechniquePreferences": {
+    "正念呼吸": { "effectiveness": 0, "count": 0 },
+    "渐进式肌肉放松": { "effectiveness": 0, "count": 0 },
+    "可视化想象": { "effectiveness": 0, "count": 0 },
+    "安全基地构建": { "effectiveness": 0, "count": 0 },
+    "感恩回忆": { "effectiveness": 0, "count": 0 },
+    "催眠暗示": { "effectiveness": 0, "count": 0 },
+    "呼吸绑定": { "effectiveness": 0, "count": 0 },
+    "意识模糊化": { "effectiveness": 0, "count": 0 }
+  },
+  
+  "sleepEffectiveness": {
+    "baseline": {
+      "avgSleepTime": null,
+      "avgSleepQuality": null,
+      "period": null
+    },
+    "current": {
+      "avgSleepTime": null,
+      "avgSleepQuality": null,
+      "period": null
+    },
+    "history": []
+  },
+  
+  "seriesProgress": {
+    "currentSeries": null,
+    "completedSeries": [],
+    "wantToStart": []
+  },
+  
+  "avoidElements": {
+    "scenes": [],
+    "characters": [],
+    "themes": []
+  },
+  
+  "storyHistory": [],
+  
+  "notes": []
+}

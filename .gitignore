@@ -1,0 +1,40 @@
+# Sleep Story Skill - Git Ignore
+
+# 用户数据和偏好（隐私数据）
+memory/user-preferences.json
+memory/sleep-story-history.json
+memory/*.json
+
+# 临时文件和备份
+*.tmp
+*.bak
+*.swp
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+logs/
+*.log
+
+# 节点模块（如果有）
+node_modules/
+
+# 构建输出
+dist/
+build/
+
+# 编辑器配置
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 环境配置
+.env
+.env.local
