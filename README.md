@@ -1,9 +1,5 @@
 # 🌙 Sleep Story Skill - 温暖治愈系心理学助眠故事
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/yourusername/sleep-story-skill)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
 **基于科学研究的智能助眠故事创作技能**，融合心理学放松技术和催眠暗示，帮助用户快速进入深度睡眠。
 
 ---
@@ -11,11 +7,11 @@
 ## ✨ 核心特色
 
 - 🧠 **科学支撑** - 基于 8 大类心理学技术，20+ 篇临床研究
-- 🎯 **个性化适配** - 根据用户反馈自动调整故事风格
-- 📚 **防重复系统** - 480 万+ 元素组合，13000 年不重复
-- 🎬 **系列故事** - 连续剧式助眠，增强期待感
-- 🔄 **持续优化** - 闭环反馈系统，效果可追踪
-- 🌸 **季节适配** - 春夏秋冬专属故事场景
+- 🎯 **防重复系统** - 118 种放松语句变体，避免听觉疲劳
+- 🎵 **音频生成** - Edge TTS（免费 Neural）+ macOS say（备用）
+- 🎬 **视频生成** - 柔和背景 + 助眠音乐
+- 🔄 **个性化适配** - 根据用户反馈自动调整故事风格
+- 📚 **系列故事** - 连续剧式助眠，增强期待感
 
 ---
 
@@ -23,43 +19,47 @@
 
 ### 安装
 
-1. **克隆技能**
 ```bash
-git clone https://github.com/yourusername/sleep-story-skill.git
-cd sleep-story-skill
-```
+# 克隆技能
+git clone https://github.com/SoyooSkills/sleep-story.git
+cd sleep-story
 
-2. **放置到技能目录**
-```bash
-# OpenClaw 技能目录
-cp -r sleep-story ~/.openclaw/workspace/skills/
-```
+# 安装 Edge TTS（推荐）
+npm install -g node-edge-tts
 
-3. **初始化用户档案**
-```bash
-cp memory/user-preferences.json.template memory/user-preferences.json
+# 安装 ffmpeg（视频生成需要）
+brew install ffmpeg  # macOS
+sudo apt-get install ffmpeg  # Ubuntu
 ```
 
 ### 使用
 
-**基本用法**：
+**1. 创作故事**
 ```
-"我睡不着，能给我讲个故事吗"
 "帮我写一个助眠故事"
-"今天好累，想听点温暖的东西"
-```
-
-**指定类型**：
-```
 "想听一个关于自然风景的故事"
-"想要动物伙伴类的助眠故事"
-"今晚想听温馨日常类"
+"我睡不着，能给我讲个故事吗"
 ```
 
-**系列故事**：
+**2. 生成音频**
+```bash
+# 默认配置（Edge TTS，自动降级）
+node scripts/generate-media.js story.txt
+
+# 指定语音和语速
+node scripts/generate-media.js story.txt --voice zh-CN-XiaoxiaoNeural --rate "-30%"
+
+# 强制使用 macOS say
+node scripts/generate-media.js story.txt --engine say
 ```
-"开始《星星旅馆的七夜》系列"
-"继续昨晚的故事"
+
+**3. 生成视频**
+```bash
+# 音频 + 视频
+node scripts/generate-media.js story.txt --mode both
+
+# 仅视频
+node scripts/generate-media.js story.txt --mode video
 ```
 
 ---
@@ -81,27 +81,133 @@ cp memory/user-preferences.json.template memory/user-preferences.json
 
 ### 技能文件
 - [`SKILL.md`](SKILL.md) - 主技能文件，包含完整创作指南
-- [`INTEGRATION.md`](INTEGRATION.md) - 四大系统整合说明
-- [`COMPLETE-SUMMARY.md`](COMPLETE-SUMMARY.md) - 完整优化总结
+- [`README.md`](README.md) - 本文件
 
 ### 参考文档
-- [`references/research-evidence.md`](references/research-evidence.md) - 科学研究依据
-- [`references/element-database.md`](references/element-database.md) - 元素数据库（50+ 场景×40+ 角色）
-- [`references/seasonal-stories.md`](references/seasonal-stories.md) - 季节性故事库
-- [`references/personalization-system.md`](references/personalization-system.md) - 个性化系统
-- [`references/series-story-framework.md`](references/series-story-framework.md) - 系列故事框架
-- [`references/feedback-loop-system.md`](references/feedback-loop-system.md) - 反馈循环系统
+- [`references/relaxation-phrases.md`](references/relaxation-phrases.md) - 放松语句库（118 种变体）
+- [`references/element-database.md`](references/element-database.md) - 故事元素数据库
+- [`references/story-types.md`](references/story-types.md) - 故事类型库
 - [`references/psychology-techniques.md`](references/psychology-techniques.md) - 心理学技术详解
-- [`references/story-templates.md`](references/story-templates.md) - 故事模板库
 - [`references/warm-words.md`](references/warm-words.md) - 温暖词汇库
 
 ### 示例故事
-- [`examples/three-nights.md`](examples/three-nights.md) - 前三晚完整故事（可直接使用）
-- [`examples/stories.md`](examples/stories.md) - 优化后示例故事
+- [`examples/stories.md`](examples/stories.md) - 示例故事
 
-### 数据模板
-- [`memory/user-preferences.json.template`](memory/user-preferences.json.template) - 用户偏好档案
-- [`memory/sleep-story-history.json.template`](memory/sleep-story-history.json.template) - 历史记录
+---
+
+## 🎵 多媒体生成
+
+### 音频生成
+
+**特点**:
+- ✅ Edge TTS（微软 Neural，免费，最自然）
+- ✅ macOS say（系统内置，备用）
+- ✅ 自动降级策略
+- ✅ 语速优化（-25% / 100 字/分钟）
+
+**使用示例**:
+```bash
+# 生成音频
+node scripts/generate-media.js story.txt --mode audio
+
+# 指定语音
+node scripts/generate-media.js story.txt --voice zh-CN-XiaoyiNeural
+
+# 调整语速
+node scripts/generate-media.js story.txt --rate "-30%"
+```
+
+### 视频生成
+
+**特点**:
+- ✅ 柔和背景（渐变/星空）
+- ✅ 助眠 BGM（钢琴/自然/白噪音）
+- ✅ 音量优化（BGM 15%）
+
+**使用示例**:
+```bash
+# 生成视频
+node scripts/generate-media.js story.txt --mode video
+
+# 指定背景
+node scripts/generate-media.js story.txt --background stars
+```
+
+---
+
+## ⚙️ 配置
+
+### 环境变量
+
+```bash
+# 输出目录
+export SLEEP_STORY_OUTPUT_DIR=~/jnSleepStory
+
+# TTS 配置
+export SLEEP_STORY_TTS_ENGINE=auto        # auto|edge|say
+export SLEEP_STORY_EDGE_VOICE=zh-CN-XiaoxiaoNeural
+export SLEEP_STORY_EDGE_RATE=-25%
+export SLEEP_STORY_SAY_VOICE=Mei-Jia
+export SLEEP_STORY_SAY_RATE=100
+
+# 视频配置
+export SLEEP_STORY_BACKGROUND=gradient    # gradient|stars
+export SLEEP_STORY_BGM_TYPE=piano         # piano|nature|white_noise
+export SLEEP_STORY_BGM_VOLUME=0.15
+```
+
+### 命令行参数
+
+```bash
+# 生成模式
+--mode audio         # 仅音频（默认）
+--mode video         # 仅视频
+--mode both          # 音频 + 视频
+
+# 语音选择
+--voice zh-CN-XiaoxiaoNeural   # 晓晓（默认，女声）
+--voice zh-CN-XiaoyiNeural     # 小艺（女声）
+--voice Mei-Jia                # macOS say（女声）
+
+# 语速调整
+--rate "-30%"        # 更慢（Edge TTS）
+--rate "100"         # 100 字/分钟（macOS say）
+```
+
+---
+
+## 🔄 防重复系统
+
+### 放松语句库
+
+**118 种变体**，避免连续故事重复：
+
+| 部位/类型 | 变体数量 |
+|-----------|----------|
+| 肩膀放松 | 10 种 |
+| 胸口放松 | 10 种 |
+| 手臂放松 | 8 种 |
+| 腿部放松 | 10 种 |
+| 呼吸引导 | 24 种 |
+| 睡意引导 | 26 种 |
+
+### 冷却期规则
+
+| 元素类型 | 冷却期 | 说明 |
+|----------|--------|------|
+| 主场景 | 3 篇 | 同一场景至少间隔 3 篇 |
+| 角色 | 2 篇 | 同角色类型至少间隔 2 篇 |
+| 放松语句 | 3 篇 | 同一表达至少间隔 3 篇 |
+| 故事类型 | 1 篇 | 尽量轮换不同类型 |
+
+### 多样性目标
+
+```
+总体多样性 > 0.8
+场景重复率 < 40%
+角色重复率 < 40%
+语句重复率 < 20%
+```
 
 ---
 
@@ -118,16 +224,6 @@ cp memory/user-preferences.json.template memory/user-preferences.json
 | ✨ 奇幻治愈类 | 星星、月亮、魔法 | 需要希望感 |
 | 🍂 季节限定类 | 春樱、夏夜、秋月、冬雪 | 应景体验 |
 
-### 5 大系列故事
-
-| 系列类型 | 特点 | 集数 | 示例 |
-|----------|------|------|------|
-| 角色成长 | 主角逐渐成长 | 5-7 | 《小云鲸冒险》 |
-| 场景探索 | 探索大型场景 | 7-10 | 《神秘图书馆的七个房间》 |
-| 任务完成 | 完成长期任务 | 7-12 | 《修补天空的人》 |
-| 季节变化 | 跟随季节变化 | 12-52 | 《森林小屋的一年》 |
-| 治愈旅程 | 心理治愈过程 | 7-10 | 《找回内心的光》 |
-
 ---
 
 ## 🧠 心理学技术
@@ -143,38 +239,6 @@ cp memory/user-preferences.json.template memory/user-preferences.json
 7. **呼吸绑定** - 呼吸与故事元素绑定
 8. **意识模糊化** - 减少认知加工
 
-所有技术均基于同行评议研究，详见 [research-evidence.md](references/research-evidence.md)
-
----
-
-## 🔄 个性化系统
-
-### 四大核心系统
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    用户反馈收集层                         │
-│  (评分、效果问卷、深度反馈、主动反馈)                      │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                    数据分析层                            │
-│  (偏好计算、趋势分析、相关性分析、效果评估)                │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                    优化执行层                            │
-│  (个性化推荐、A/B 测试、策略调整、系列生成)                 │
-└─────────────────────────────────────────────────────────┘
-                          ↓
-┌─────────────────────────────────────────────────────────┐
-│                    效果验证层                            │
-│  (前后对比、对照组、长期追踪、持续改进)                    │
-└─────────────────────────────────────────────────────────┘
-```
-
-详见 [INTEGRATION.md](INTEGRATION.md)
-
 ---
 
 ## 📊 效果追踪
@@ -186,7 +250,6 @@ cp memory/user-preferences.json.template memory/user-preferences.json
 | 即时反馈 | 故事结束后 | 评分、简单评价 | 每次 |
 | 效果反馈 | 次日早晨 | 入睡时间、睡眠质量 | 每天 |
 | 深度反馈 | 周末 | 偏好变化、建议 | 每周 |
-| 主动反馈 | 随时 | 问题、需求、表扬 | 用户主动 |
 
 ### 核心指标
 
@@ -194,34 +257,6 @@ cp memory/user-preferences.json.template memory/user-preferences.json
 - **净推荐值 (NPS)**：目标 > 50
 - **入睡改善率**：目标 > 30%
 - **睡眠质量指数 (SQI)**：目标 > 3.0
-
----
-
-## 🚀 开发路线图
-
-### 第 1 阶段：基础使用（第 1 周）
-- [x] 创建用户偏好档案
-- [x] 使用前三晚故事
-- [x] 收集基础反馈
-- [x] 建立睡眠基线
-
-### 第 2 阶段：个性化启动（第 2-4 周）
-- [ ] 实现偏好计算
-- [ ] 自动化推荐
-- [ ] 趋势分析
-- [ ] 优化调整
-
-### 第 3 阶段：系列故事（第 2-3 月）
-- [ ] 选择系列类型
-- [ ] 开始系列故事
-- [ ] 追踪完成率
-- [ ] 收集反馈
-
-### 第 4 阶段：成熟运营（第 4 月起）
-- [ ] 月度深度分析
-- [ ] 季度大优化
-- [ ] 年度回顾
-- [ ] 新功能开发
 
 ---
 
@@ -240,25 +275,12 @@ cp memory/user-preferences.json.template memory/user-preferences.json
 - 🔬 新增研究依据
 - 🐛 修复问题
 - 💡 功能建议
-- 🌍 翻译
 
 ---
 
 ## 📄 许可证
 
 本项目采用 [MIT 许可证](LICENSE)
-
-```
-MIT License
-
-Copyright (c) 2026 Sleep Story Skill Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software...
-```
 
 ---
 
@@ -272,9 +294,6 @@ copies of the Software...
 - Morin, C. M., et al. (2006). *Sleep*, 29(11), 1398-1414
 - Milling, L. S., et al. (2018). *International Journal of Clinical and Experimental Hypnosis*, 66(4), 432-451
 - Black, D. S., et al. (2015). *JAMA Internal Medicine*, 175(4), 494-501
-- 等 20+ 篇临床研究
-
-详见 [research-evidence.md](references/research-evidence.md)
 
 ### 特别感谢
 
@@ -286,15 +305,9 @@ copies of the Software...
 
 ## 📞 联系方式
 
-- **项目地址**: https://github.com/yourusername/sleep-story-skill
-- **问题反馈**: https://github.com/yourusername/sleep-story-skill/issues
-- **邮件**: your.email@example.com
-
----
-
-## 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/sleep-story-skill&type=Date)](https://star-history.com/#yourusername/sleep-story-skill&Date)
+- **项目地址**: https://github.com/SoyooSkills/sleep-story
+- **问题反馈**: https://github.com/SoyooSkills/sleep-story/issues
+- **讨论区**: https://github.com/SoyooSkills/sleep-story/discussions
 
 ---
 

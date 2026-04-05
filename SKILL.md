@@ -1,7 +1,7 @@
 ---
 name: sleep-story
-description: 温暖治愈系心理学助眠故事创作。融合渐进式肌肉放松、正念呼吸、可视化想象、安全基地构建、感恩回忆、催眠暗示等心理学技术。故事类型包含自然风景、温馨日常、动物伙伴、童年回忆、奇幻治愈。输出 1000-2500 字纯文本故事，帮助用户放松身心、缓解焦虑、快速进入深度睡眠。
-version: 1.0.0
+description: 温暖治愈系心理学助眠故事创作。融合渐进式肌肉放松、正念呼吸、可视化想象、安全基地构建、感恩回忆、催眠暗示等心理学技术。故事类型包含自然风景、温馨日常、动物伙伴、童年回忆、奇幻治愈。输出 1000-2500 字纯文本故事，支持通过脚本生成助眠音频（Edge TTS 优先，不可用时降级 macOS say，可指定语音/语速）与助眠视频，帮助用户放松身心、缓解焦虑、快速进入深度睡眠。
+version: 4.0.0
 homepage: https://github.com/SoyooSkills/sleep-story
 ---
 
@@ -15,6 +15,8 @@ homepage: https://github.com/SoyooSkills/sleep-story
 - 建立安全的心理空间
 - **快速自然过渡到睡眠状态**
 - **进入深度、高质量的睡眠**
+- **支持生成温柔女声音频**（`scripts/generate-media.js`：优先 Edge TTS，不可用时 macOS say）
+- **支持生成助眠视频**（柔和背景 + 助眠 BGM，依赖 ffmpeg）
 
 **核心特色**：
 - ✅ **强故事性** - 每个故事都有完整的叙事弧线，而非单纯场景描述
@@ -25,6 +27,8 @@ homepage: https://github.com/SoyooSkills/sleep-story
 - ✅ **个性化适配** - 根据用户反馈自动调整故事风格
 - ✅ **系列故事** - 连续剧式助眠，增强期待感和情感连接
 - ✅ **持续优化** - 闭环反馈系统，效果追踪和迭代改进
+- ✅ **音频生成** - Edge TTS（默认晓晓 Neural）优先；降级 macOS say（默认 Mei-Jia，语速偏慢）
+- ✅ **视频生成** - 柔和背景 + BGM（音量默认约 15%，由 `generate-video.js` 合成）
 
 ## 📖 何时使用此技能
 
@@ -110,6 +114,7 @@ homepage: https://github.com/SoyooSkills/sleep-story
 - [个性化系统](references/personalization-system.md) - 偏好追踪和适配
 - [系列故事框架](references/series-story-framework.md) - 连续剧创作指南
 - [反馈循环系统](references/feedback-loop-system.md) - 效果追踪和优化
+- [多媒体生成指南](references/multimedia-guide.md) - 音频/视频生成详解
 - [用户偏好模板](memory/user-preferences.json.template) - 数据结构定义
 
 ---
@@ -156,7 +161,12 @@ homepage: https://github.com/SoyooSkills/sleep-story
     "sensoryFocus": ["视觉 - 月光", "听觉 - 雨声"]
   },
   "storyTypes": ["自然风景类", "温馨日常类"],
-  "techniques": ["正念呼吸", "安全基地构建"]
+  "techniques": ["正念呼吸", "安全基地构建"],
+  "relaxationPhrases": {
+    "shoulders": [1, 3],
+    "chest": [2, 5],
+    "breathing": [1, 4]
+  }
 }
 ```
 
@@ -169,15 +179,65 @@ homepage: https://github.com/SoyooSkills/sleep-story
 | **旅程类型** | 2 篇故事 | 同一探索方式（如"散步"）至少间隔 2 篇故事 |
 | **感官焦点** | 1 篇故事 | 连续故事应切换主要感官（视觉→听觉→触觉） |
 | **故事类型** | 1 篇故事 | 尽量轮换四大类型，避免连续相同 |
+| **放松语句** | 3 篇故事 | 同一放松表达（如"肩膀放松了"）至少间隔 3 篇 |
+
+### 放松语句防重复
+
+**重要**: 避免连续故事使用相同的放松引导语句！
+
+**可用变体数量**:
+- 肩膀放松：10 种变体
+- 胸口放松：10 种变体
+- 手臂放松：8 种变体
+- 手掌放松：8 种变体
+- 腰部放松：8 种变体
+- 腿部放松：10 种变体
+- 脚部放松：8 种变体
+- 呼吸引导：24 种变体
+- 睡意引导：26 种变体
+
+**使用方法**:
+1. 查看 `references/relaxation-phrases.md`
+2. 选择**未使用**的变体编号
+3. 记录到 `usedRelaxationPhrases`
+4. 同一变体间隔 3 篇才能再次使用
+
+**示例**:
+```markdown
+❌ 错误（重复）:
+故事 1: "你的肩膀放松了"
+故事 2: "你的肩膀放松了"
+
+✅ 正确（变化）:
+故事 1: "肩膀慢慢沉下来了，像融化的雪" (变体 1)
+故事 2: "双肩的紧绷感随着呼气轻轻散去" (变体 2)
+故事 3: "肩膀的肌肉松开了，像解冻的冰块" (变体 7)
+```
 
 ### 创作前检查清单
 
-在开始创作前：
-1. 读取 `memory/sleep-story-history.json`（如果存在）
-2. 检查最近使用的场景、角色、旅程类型
-3. 选择**未使用或冷却期已过**的元素
-4. 优先选择用户未体验过的故事类型
-5. 创作完成后更新追踪文件
+在开始创作前，**必须完成**以下步骤：
+
+1. **读取历史记录**
+   - 读取 `memory/sleep-story-history.json`
+   - 检查最近 5 篇故事的场景、角色、旅程
+   - 检查已使用的放松语句变体编号
+
+2. **选择新鲜元素**
+   - 选择**未使用**或冷却期已过的场景
+   - 选择**未使用**或冷却期已过的角色类型
+   - 选择**未使用**的放松语句变体
+   - 优先轮换故事类型
+
+3. **多样性检查**
+   - 最近 5 篇场景重复率 < 40%
+   - 最近 5 篇角色重复率 < 40%
+   - 放松语句重复率 < 20%
+
+4. **创作后更新**
+   - 添加新故事到 `stories` 数组
+   - 更新 `recentElements` 和 `usedRelaxationPhrases`
+   - 更新时间戳和总数
 
 ## ✍️ 创作流程
 
@@ -377,6 +437,111 @@ homepage: https://github.com/SoyooSkills/sleep-story
 > "每当你的呼吸变得平稳，身体就会记住这种放松的感觉..."
 > "这个温暖的角落，会一直在这里等你回来..."
 
+## 🎵 多媒体生成（音频/视频）
+
+使用仓库内 **`scripts/generate-media.js`** 将故事文本转为音频；可选在同一流程中合成视频（内部调用 `generate-audio.js` / `generate-video.js`）。
+
+### TTS 策略（与脚本一致）
+
+1. **`generate-media.js` 入口**：运行时会先检测 TTS → **Edge 可用则固定走 Edge**；**否则走 macOS `say`**，并在调用 `generate-audio.js` 前设置 `SLEEP_STORY_TTS_ENGINE` 为 `edge` 或 `say`（等价于「自动优先 Edge」）。
+2. **`generate-audio.js` 内**：若引擎为 `edge` 但单次合成失败，**仍会尝试降级到 `say`**（与脚本实现一致）。
+3. **Edge TTS 依赖**：可用性通过 `npx node-edge-tts --version` 检测；请安装 CLI，例如：`npm install -g node-edge-tts`（确保 `npx` 能解析到 `node-edge-tts`）。
+4. **非 macOS**：无 `say` 时需确保 Edge TTS 可用，否则会提示没有可用 TTS。
+5. **强制指定 `edge` / `say`**：`generate-media.js` 的 CLI 参数以脚本实现为准；需要明确强制引擎时，请直接使用 **`node scripts/generate-audio.js`**（支持 `--engine` 与环境变量 `SLEEP_STORY_TTS_ENGINE`）。
+
+### 音频特点
+
+- **Edge（首选）**：默认 `zh-CN-XiaoxiaoNeural`（晓晓），语速默认 `-25%`（偏慢，助眠向）。
+- **macOS say（降级）**：默认语音 `Mei-Jia`，语速默认 **100** 字/分钟（偏慢）。
+- 文本会经 `generate-audio.js` 做轻量预处理以改善停顿（与脚本一致）。
+
+### 命令行用法（`generate-media.js`）
+
+```bash
+# 进入技能目录后执行（第一个参数为故事文本文件路径）
+cd ~/.openclaw/workspace/skills/sleep-story
+
+# 默认：仅生成音频；模式为 audio；TTS 为 auto（优先 Edge，否则 say）
+node scripts/generate-media.js story.txt sleep-story-2026-04-05
+
+node scripts/generate-media.js story.txt --mode audio
+node scripts/generate-media.js story.txt --mode video    # 需 ffmpeg；先产音频再合成视频
+node scripts/generate-media.js story.txt --mode both
+
+# Edge 语音示例（含 Neural 的名称会写入 Edge 配置）
+node scripts/generate-media.js story.txt --voice zh-CN-XiaoyiNeural
+
+# Edge 语速：百分比字符串，如 "-20%"（更慢）或 "+10%"（稍快）
+node scripts/generate-media.js story.txt --rate "-20%"
+
+# 输出目录
+node scripts/generate-media.js story.txt --output ~/jnSleepStory
+```
+
+**常用 Edge 中文语音（与脚本内说明一致）**：`zh-CN-XiaoxiaoNeural`（默认）、`zh-CN-XiaoyiNeural`、`zh-CN-LiaoniaNeural`、`zh-CN-YunxiNeural`、`zh-CN-YunyangNeural`。非 Neural 名称会按脚本逻辑归入 **say** 侧（如 `Mei-Jia`、`Ting-Ting`）。
+
+**详细文档**：详见 [references/multimedia-guide.md](references/multimedia-guide.md)（若与脚本冲突，**以 `generate-media.js` 与 `generate-audio.js` 为准**）。
+
+### 视频与 BGM
+
+- **`--mode video` / `both`** 时需要 **ffmpeg**；未安装时脚本会跳过视频，**音频仍可成功**。
+- **`--background`** / `SLEEP_STORY_BACKGROUND`：与 `generate-video.js` 中已实现分支一致，有效取值为 **`gradient`**（默认）、**`stars`**。源码注释中虽列出 `nature` / `ocean` / `forest`，当前未单独分支，**会按默认渐变背景处理**。
+- BGM 类型、音量等由 **`generate-video.js`** 读取环境变量（`generate-media.js` 会传入背景类型）。
+
+**依赖安装（ffmpeg，仅视频需要）**：
+
+```bash
+# macOS
+brew install ffmpeg
+
+# Ubuntu/Debian
+sudo apt-get install ffmpeg
+
+# Windows
+choco install ffmpeg
+```
+
+### 完整工作流程示例
+
+```bash
+# 1. 创作故事并保存为纯文本或 .md
+# 2. 生成媒体（示例：音频 + 视频）
+cd ~/.openclaw/workspace/skills/sleep-story
+node scripts/generate-media.js ~/jnSleepStory/sleep-story-2026-04-05.md \
+  sleep-story-2026-04-05 \
+  --mode both \
+  --output ~/jnSleepStory
+
+# 3. 典型输出：{故事 ID}-{YYYY-MM-DD}.mp3 / .mp4（日期为运行当日，与 generate-audio / generate-video 一致）
+# 例如：~/jnSleepStory/sleep-story-2026-04-05-2026-04-05.mp3
+```
+
+### 环境变量参考（与 `generate-media.js` CONFIG 及视频合成一致）
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| `SLEEP_STORY_OUTPUT_DIR` | 输出目录 | `~/jnSleepStory` |
+| `SLEEP_STORY_MODE` | `audio` \| `video` \| `both` | `audio` |
+| `SLEEP_STORY_TTS_ENGINE` | `auto`（优先 Edge）\| `edge` \| `say` | `auto` |
+| `SLEEP_STORY_EDGE_VOICE` | Edge 语音名 | `zh-CN-XiaoxiaoNeural` |
+| `SLEEP_STORY_EDGE_RATE` | Edge 语速（如 `-25%`） | `-25%` |
+| `SLEEP_STORY_SAY_VOICE` | macOS say 语音 | `Mei-Jia` |
+| `SLEEP_STORY_SAY_RATE` | say 语速（字/分钟） | `100` |
+| `SLEEP_STORY_BACKGROUND` | 视频背景类型 | `gradient` |
+
+**视频合成阶段常用（`generate-video.js`）**：`SLEEP_STORY_VIDEO_WIDTH` / `HEIGHT` / `FPS`；`SLEEP_STORY_BGM_TYPE`（如 `piano`、`nature`、`white_noise`、`ambient`）；`SLEEP_STORY_BGM_FILE`（可选自定义音频）；`SLEEP_STORY_BGM_VOLUME`（默认 `0.15`）；`SLEEP_STORY_BGM_FADE`（默认 `3` 秒）。**背景画面**仅 `gradient` 与 `stars` 有独立实现，其余字符串回退为渐变。
+
+### 使用场景建议
+
+| 场景 | 推荐格式 | 说明 |
+|------|----------|------|
+| 纯听觉助眠 | 🎵 音频 | 闭眼聆听，专注于声音引导 |
+| 视觉放松 | 🎬 视频 | 柔和背景帮助视觉放松 |
+| 旅行/通勤 | 🎵 音频 | 节省电量，专注听觉 |
+| 睡前仪式 | 🎬 视频 | 建立睡前视觉暗示 |
+
+---
+
 ## 🔄 迭代优化
 
 每次创作后，根据用户反馈调整：
@@ -429,6 +594,8 @@ homepage: https://github.com/SoyooSkills/sleep-story
 只需告诉我：
 - "想听一个关于 [主题] 的故事"
 - "我睡不着，想要一个没听过的故事类型"
+- "帮我生成助眠音频/视频"
 - 或者直接说"我睡不着"
 
-我会为你创作一个**全新的、有故事性的、不会重复的、科学助眠的**睡前故事。
+我会为你创作一个**全新的、有故事性的、不会重复的、科学助眠的**睡前故事，
+并可以生成**温柔女声音频**和**助眠视频**供你使用。
