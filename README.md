@@ -35,6 +35,7 @@ sudo apt-get install ffmpeg  # Ubuntu
 ### 使用
 
 **1. 创作故事**
+
 ```
 "帮我写一个助眠故事"
 "想听一个关于自然风景的故事"
@@ -42,6 +43,7 @@ sudo apt-get install ffmpeg  # Ubuntu
 ```
 
 **2. 生成音频**
+
 ```bash
 # 默认配置（Edge TTS，自动降级）
 node scripts/generate-media.js story.txt
@@ -54,6 +56,7 @@ node scripts/generate-media.js story.txt --engine say
 ```
 
 **3. 生成视频**
+
 ```bash
 # 音频 + 视频
 node scripts/generate-media.js story.txt --mode both
@@ -68,22 +71,24 @@ node scripts/generate-media.js story.txt --mode video
 
 基于临床研究数据：
 
-| 技术 | 预期改善 | 证据来源 |
-|------|----------|----------|
-| 渐进式肌肉放松 | 入睡缩短 15-20 分钟 | Conrad & Roth, 2007 |
-| 4-7-8 呼吸法 | 入睡缩短 10-15 分钟 | Elliott et al., 2019 |
-| 催眠暗示 | 入睡缩短 20-30 分钟 | Milling et al., 2018 |
-| **综合干预** | **入睡缩短 30-45 分钟** | Morin et al., 2006 |
+| 技术           | 预期改善                | 证据来源             |
+| -------------- | ----------------------- | -------------------- |
+| 渐进式肌肉放松 | 入睡缩短 15-20 分钟     | Conrad & Roth, 2007  |
+| 4-7-8 呼吸法   | 入睡缩短 10-15 分钟     | Elliott et al., 2019 |
+| 催眠暗示       | 入睡缩短 20-30 分钟     | Milling et al., 2018 |
+| **综合干预**   | **入睡缩短 30-45 分钟** | Morin et al., 2006   |
 
 ---
 
 ## 📚 核心文档
 
 ### 技能文件
+
 - [`SKILL.md`](SKILL.md) - 主技能文件，包含完整创作指南
 - [`README.md`](README.md) - 本文件
 
 ### 参考文档
+
 - [`references/relaxation-phrases.md`](references/relaxation-phrases.md) - 放松语句库（118 种变体）
 - [`references/element-database.md`](references/element-database.md) - 故事元素数据库
 - [`references/story-types.md`](references/story-types.md) - 故事类型库
@@ -91,6 +96,7 @@ node scripts/generate-media.js story.txt --mode video
 - [`references/warm-words.md`](references/warm-words.md) - 温暖词汇库
 
 ### 示例故事
+
 - [`examples/stories.md`](examples/stories.md) - 示例故事
 
 ---
@@ -100,12 +106,14 @@ node scripts/generate-media.js story.txt --mode video
 ### 音频生成
 
 **特点**:
+
 - ✅ Edge TTS（微软 Neural，免费，最自然）
 - ✅ macOS say（系统内置，备用）
 - ✅ 自动降级策略
 - ✅ 语速优化（-25% / 100 字/分钟）
 
 **使用示例**:
+
 ```bash
 # 生成音频
 node scripts/generate-media.js story.txt --mode audio
@@ -120,11 +128,13 @@ node scripts/generate-media.js story.txt --rate "-30%"
 ### 视频生成
 
 **特点**:
+
 - ✅ 柔和背景（渐变/星空）
 - ✅ 助眠 BGM（钢琴/自然/白噪音）
 - ✅ 音量优化（BGM 15%）
 
 **使用示例**:
+
 ```bash
 # 生成视频
 node scripts/generate-media.js story.txt --mode video
@@ -141,7 +151,7 @@ node scripts/generate-media.js story.txt --background stars
 
 ```bash
 # 输出目录
-export SLEEP_STORY_OUTPUT_DIR=~/jnSleepStory
+export SLEEP_STORY_OUTPUT_DIR=~/sleepStory
 
 # TTS 配置
 export SLEEP_STORY_TTS_ENGINE=auto        # auto|edge|say
@@ -183,22 +193,22 @@ export SLEEP_STORY_BGM_VOLUME=0.15
 **118 种变体**，避免连续故事重复：
 
 | 部位/类型 | 变体数量 |
-|-----------|----------|
-| 肩膀放松 | 10 种 |
-| 胸口放松 | 10 种 |
-| 手臂放松 | 8 种 |
-| 腿部放松 | 10 种 |
-| 呼吸引导 | 24 种 |
-| 睡意引导 | 26 种 |
+| --------- | -------- |
+| 肩膀放松  | 10 种    |
+| 胸口放松  | 10 种    |
+| 手臂放松  | 8 种     |
+| 腿部放松  | 10 种    |
+| 呼吸引导  | 24 种    |
+| 睡意引导  | 26 种    |
 
 ### 冷却期规则
 
-| 元素类型 | 冷却期 | 说明 |
-|----------|--------|------|
-| 主场景 | 3 篇 | 同一场景至少间隔 3 篇 |
-| 角色 | 2 篇 | 同角色类型至少间隔 2 篇 |
-| 放松语句 | 3 篇 | 同一表达至少间隔 3 篇 |
-| 故事类型 | 1 篇 | 尽量轮换不同类型 |
+| 元素类型 | 冷却期 | 说明                    |
+| -------- | ------ | ----------------------- |
+| 主场景   | 3 篇   | 同一场景至少间隔 3 篇   |
+| 角色     | 2 篇   | 同角色类型至少间隔 2 篇 |
+| 放松语句 | 3 篇   | 同一表达至少间隔 3 篇   |
+| 故事类型 | 1 篇   | 尽量轮换不同类型        |
 
 ### 多样性目标
 
@@ -215,14 +225,14 @@ export SLEEP_STORY_BGM_VOLUME=0.15
 
 ### 6 大故事类型
 
-| 类型 | 核心意象 | 适用场景 |
-|------|----------|----------|
+| 类型          | 核心意象               | 适用场景             |
+| ------------- | ---------------------- | -------------------- |
 | 🌲 自然风景类 | 森林、海洋、星空、山川 | 压力大、需要开阔心境 |
-| 🏠 温馨日常类 | 小屋、咖啡馆、图书馆 | 孤独、需要归属感 |
-| 🐱 动物伙伴类 | 小猫、兔子、鲸鱼 | 需要陪伴感 |
-| 🧸 童年回忆类 | 外婆家、老街道、学校 | 怀念过去、需要安全感 |
-| ✨ 奇幻治愈类 | 星星、月亮、魔法 | 需要希望感 |
-| 🍂 季节限定类 | 春樱、夏夜、秋月、冬雪 | 应景体验 |
+| 🏠 温馨日常类 | 小屋、咖啡馆、图书馆   | 孤独、需要归属感     |
+| 🐱 动物伙伴类 | 小猫、兔子、鲸鱼       | 需要陪伴感           |
+| 🧸 童年回忆类 | 外婆家、老街道、学校   | 怀念过去、需要安全感 |
+| ✨ 奇幻治愈类 | 星星、月亮、魔法       | 需要希望感           |
+| 🍂 季节限定类 | 春樱、夏夜、秋月、冬雪 | 应景体验             |
 
 ---
 
@@ -245,11 +255,11 @@ export SLEEP_STORY_BGM_VOLUME=0.15
 
 ### 反馈收集
 
-| 类型 | 时机 | 内容 | 频率 |
-|------|------|------|------|
-| 即时反馈 | 故事结束后 | 评分、简单评价 | 每次 |
-| 效果反馈 | 次日早晨 | 入睡时间、睡眠质量 | 每天 |
-| 深度反馈 | 周末 | 偏好变化、建议 | 每周 |
+| 类型     | 时机       | 内容               | 频率 |
+| -------- | ---------- | ------------------ | ---- |
+| 即时反馈 | 故事结束后 | 评分、简单评价     | 每次 |
+| 效果反馈 | 次日早晨   | 入睡时间、睡眠质量 | 每天 |
+| 深度反馈 | 周末       | 偏好变化、建议     | 每周 |
 
 ### 核心指标
 
@@ -290,10 +300,10 @@ export SLEEP_STORY_BGM_VOLUME=0.15
 
 本技能的心理学技术基于以下研究：
 
-- Jacobson, E. (1938). *Progressive Relaxation*
-- Morin, C. M., et al. (2006). *Sleep*, 29(11), 1398-1414
-- Milling, L. S., et al. (2018). *International Journal of Clinical and Experimental Hypnosis*, 66(4), 432-451
-- Black, D. S., et al. (2015). *JAMA Internal Medicine*, 175(4), 494-501
+- Jacobson, E. (1938). _Progressive Relaxation_
+- Morin, C. M., et al. (2006). _Sleep_, 29(11), 1398-1414
+- Milling, L. S., et al. (2018). _International Journal of Clinical and Experimental Hypnosis_, 66(4), 432-451
+- Black, D. S., et al. (2015). _JAMA Internal Medicine_, 175(4), 494-501
 
 ### 特别感谢
 

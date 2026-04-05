@@ -18,8 +18,8 @@ const { execSync } = require('child_process');
 // 配置
 const CONFIG = {
   // 输出目录
-  outputDir: process.env.SLEEP_STORY_OUTPUT_DIR || path.join(process.env.HOME, 'jnSleepStory'),
-  
+  outputDir: process.env.SLEEP_STORY_OUTPUT_DIR || path.join(process.env.HOME, 'sleepStory'),
+
   // 视频配置
   video: {
     width: process.env.SLEEP_STORY_VIDEO_WIDTH || '1920',
@@ -27,10 +27,10 @@ const CONFIG = {
     fps: process.env.SLEEP_STORY_VIDEO_FPS || '30',
     duration: null, // 根据音频自动计算
   },
-  
+
   // 背景类型：gradient | stars | nature | ocean | forest
   backgroundType: process.env.SLEEP_STORY_BACKGROUND || 'gradient',
-  
+
   // 背景音乐配置
   bgm: {
     // 背景音乐类型：piano | nature | white_noise | ambient
@@ -42,7 +42,7 @@ const CONFIG = {
     // 淡入淡出时间（秒）
     fadeDuration: parseFloat(process.env.SLEEP_STORY_BGM_FADE || '3'),
   },
-  
+
   // 音频格式
   audioFormat: 'mp3',
   // 视频格式
@@ -81,7 +81,7 @@ function checkFfmpeg() {
  */
 function getFfmpegInstallCommand() {
   const platform = process.platform;
-  
+
   if (platform === 'darwin') {
     return 'brew install ffmpeg';
   } else if (platform === 'linux') {
@@ -99,7 +99,7 @@ function getFfmpegInstallCommand() {
   } else if (platform === 'win32') {
     return 'choco install ffmpeg';
   }
-  
+
   return '请手动安装 ffmpeg: https://ffmpeg.org/download.html';
 }
 
@@ -109,7 +109,7 @@ function getFfmpegInstallCommand() {
  */
 function checkAndNotifyFfmpeg() {
   const hasFfmpeg = checkFfmpeg();
-  
+
   if (hasFfmpeg) {
     try {
       const version = execSync('ffmpeg -version', { encoding: 'utf8', stdio: 'pipe' }).split('\n')[0];
@@ -128,7 +128,7 @@ function checkAndNotifyFfmpeg() {
     console.log('安装完成后重新运行此脚本即可生成视频。');
     console.log('如果只需要音频，请使用 --mode audio 参数。\n');
   }
-  
+
   return hasFfmpeg;
 }
 
@@ -141,11 +141,11 @@ function checkAndNotifyFfmpeg() {
  */
 function createBgm(outputFile, duration) {
   console.log(`生成柔缓背景音乐 (类型：${CONFIG.bgm.type})...`);
-  
+
   // 简化命令：使用单个正弦波生成柔和音调
   const freq = CONFIG.bgm.type === 'piano' ? '329.63' : '300';
   const cmd = `ffmpeg -y -f lavfi -i "sine=frequency=${freq}:duration=${duration}:sample_rate=44100" -af "volume=${CONFIG.bgm.volume},treble=f=2000" -c:a mp3 -b:a 64k "${outputFile}"`;
-  
+
   try {
     execSync(cmd, { stdio: 'pipe' });
     console.log(`✅ 背景音乐生成完成`);
@@ -165,20 +165,20 @@ function createBgm(outputFile, duration) {
  */
 function createGradientBackground(outputFile, duration) {
   console.log(`创建渐变背景视频 (夜空渐变)...`);
-  
+
   // 使用 ffmpeg 的 color 和 overlay 滤镜创建柔和渐变
   // 深蓝色 (#1a1a2e) 到 紫蓝色 (#16213e) 的垂直渐变
   const cmd = `ffmpeg -y -f lavfi -i "color=c=#1a1a2e:s=${CONFIG.video.width}x${CONFIG.video.height}:d=${duration}:r=${CONFIG.video.fps}" \
     -vf "gradfun=radius=16:strength=12,format=yuv420p" \
     -c:v ${CONFIG.videoCodec} -preset slow -crf 18 -pix_fmt yuv420p "${outputFile}" 2>&1`;
-  
+
   try {
     execSync(cmd, { stdio: 'pipe' });
-    
+
     // 验证生成的视频是否有画面
     const info = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "${outputFile}"`, { encoding: 'utf8' });
     const [width, height] = info.trim().split(',');
-    
+
     if (parseInt(width) > 0 && parseInt(height) > 0) {
       console.log(`✅ 背景视频生成完成 (${width}x${height})`);
       return true;
@@ -199,12 +199,12 @@ function createGradientBackground(outputFile, duration) {
  */
 function createSimpleBackground(outputFile, duration) {
   console.log(`创建简单背景视频 (纯色 + 微光效果)...`);
-  
+
   // 创建带有微弱亮度变化的背景
   const cmd = `ffmpeg -y -f lavfi -i "color=c=#1a1a3e:s=${CONFIG.video.width}x${CONFIG.video.height}:d=${duration}:r=${CONFIG.video.fps}" \
     -vf "eq=brightness=0.05:contrast=0.9,format=yuv420p" \
     -c:v ${CONFIG.videoCodec} -preset fast -crf 23 -pix_fmt yuv420p "${outputFile}" 2>&1`;
-  
+
   try {
     execSync(cmd, { stdio: 'pipe' });
     console.log(`✅ 背景视频生成完成`);
@@ -224,12 +224,12 @@ function createSimpleBackground(outputFile, duration) {
  */
 function createStarsBackground(outputFile, duration) {
   console.log(`创建星空背景视频...`);
-  
+
   // 创建深蓝色背景 + 随机白点（星星）
   const cmd = `ffmpeg -y -f lavfi -i "color=c=#0a0a1a:s=${CONFIG.video.width}x${CONFIG.video.height}:d=${duration}:r=${CONFIG.video.fps}" \
     -vf "geq=lum='if(lt(random(X/W*100+Y/H*100),0.02),255,p(X,Y))':cb=0:cr=0,format=yuv420p" \
     -c:v ${CONFIG.videoCodec} -preset slow -crf 20 -pix_fmt yuv420p "${outputFile}" 2>&1`;
-  
+
   try {
     execSync(cmd, { stdio: 'pipe' });
     console.log(`✅ 星空背景生成完成`);
@@ -269,15 +269,15 @@ function getAudioDuration(audioFile) {
  */
 function composeVideo(backgroundFile, storyAudioFile, bgmFile, outputFile) {
   console.log(`合成最终视频...`);
-  
+
   const storyDuration = getAudioDuration(storyAudioFile);
   console.log(`故事音频时长：${storyDuration.toFixed(2)} 秒`);
-  
+
   // 构建 ffmpeg 命令
   // 输入：0=背景视频，1=故事音频，2=背景音乐
   // 输出：视频流来自 0，音频流是 1 和 2 的混合
   const filterComplex = `[1:a][2:a]amix=inputs=2:duration=first:dropout_transition=2,volume=1+${CONFIG.bgm.volume * 0.5}[mixed_audio]`;
-  
+
   const cmd = `ffmpeg -y \
     -i "${backgroundFile}" \
     -i "${storyAudioFile}" \
@@ -289,7 +289,7 @@ function composeVideo(backgroundFile, storyAudioFile, bgmFile, outputFile) {
     -map 0:v -map "[mixed_audio]" \
     -shortest \
     "${outputFile}" 2>&1`;
-  
+
   try {
     execSync(cmd, { stdio: 'inherit' });
     return true;
@@ -308,41 +308,41 @@ function composeVideo(backgroundFile, storyAudioFile, bgmFile, outputFile) {
  */
 function generateVideo(storyAudioFile, storyId, options = {}) {
   ensureOutputDir();
-  
+
   // 检查 ffmpeg 是否已安装
   const hasFfmpeg = checkAndNotifyFfmpeg();
-  
+
   if (!hasFfmpeg) {
     console.log('💡 提示：跳过视频生成，仅生成音频文件。');
     console.log('   如需视频功能，请先安装 ffmpeg。\n');
     return null;
   }
-  
+
   const timestamp = new Date().toISOString().split('T')[0];
   const videoFile = path.join(CONFIG.outputDir, `${storyId || 'sleep-story'}-${timestamp}.${CONFIG.videoFormat}`);
   const tempBgFile = path.join(CONFIG.outputDir, `temp-bg-${Date.now()}.mp4`);
   const tempBgmFile = path.join(CONFIG.outputDir, `temp-bgm-${Date.now()}.mp3`);
-  
+
   console.log(`\n🎬 开始生成视频...`);
   console.log(`故事音频：${storyAudioFile}`);
   console.log(`输出文件：${videoFile}`);
   console.log(`背景类型：${CONFIG.backgroundType}`);
   console.log(`背景音乐类型：${CONFIG.bgm.type}`);
   console.log(`背景音乐音量：${CONFIG.bgm.volume}\n`);
-  
+
   if (!fs.existsSync(storyAudioFile)) {
     console.error(`错误：音频文件不存在：${storyAudioFile}`);
     return null;
   }
-  
+
   try {
     // Step 1: 获取音频时长
     const duration = getAudioDuration(storyAudioFile);
-    
+
     // Step 2: 创建背景视频
     console.log(`Step 1/3: 创建背景视频 (${CONFIG.backgroundType})...`);
     let bgSuccess = false;
-    
+
     switch (CONFIG.backgroundType) {
       case 'stars':
         bgSuccess = createStarsBackground(tempBgFile, duration);
@@ -352,16 +352,16 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
         bgSuccess = createGradientBackground(tempBgFile, duration);
         break;
     }
-    
+
     if (!bgSuccess) {
       throw new Error('创建背景视频失败');
     }
-    
+
     // Step 3: 生成背景音乐
     console.log(`Step 2/3: 生成柔缓背景音乐...`);
     let hasBgm = false;
     let bgmToUse = null;
-    
+
     if (CONFIG.bgm.file && fs.existsSync(CONFIG.bgm.file)) {
       console.log(`使用提供的背景音乐：${CONFIG.bgm.file}`);
       bgmToUse = CONFIG.bgm.file;
@@ -372,7 +372,7 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
         bgmToUse = tempBgmFile;
       }
     }
-    
+
     if (!hasBgm) {
       console.log('⚠️  背景音乐生成失败，使用简化方案...');
       // 创建简单的背景音乐（单音正弦波）
@@ -386,10 +386,10 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
         console.log('⚠️  简化背景音乐也失败，使用静音轨道');
       }
     }
-    
+
     // Step 4: 合成视频
     console.log(`Step 3/3: 合成最终视频...`);
-    
+
     // 如果没有 BGM，创建一个静音轨道
     if (!hasBgm || !bgmToUse) {
       bgmToUse = path.join(CONFIG.outputDir, `temp-silent-${Date.now()}.mp3`);
@@ -399,9 +399,9 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
         console.log('⚠️  无法创建静音轨道，继续 without BGM');
       }
     }
-    
+
     const success = composeVideo(tempBgFile, storyAudioFile, bgmToUse, videoFile);
-    
+
     // 清理临时文件
     try {
       fs.unlinkSync(tempBgFile);
@@ -414,7 +414,7 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
     } catch (e) {
       // 忽略清理错误
     }
-    
+
     if (success) {
       console.log(`\n✅ 视频生成成功！`);
       console.log(`文件位置：${videoFile}\n`);
@@ -428,7 +428,7 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
     try {
       if (fs.existsSync(tempBgFile)) fs.unlinkSync(tempBgFile);
       if (fs.existsSync(tempBgmFile)) fs.unlinkSync(tempBgmFile);
-    } catch (e) {}
+    } catch (e) { }
     return null;
   }
 }
@@ -436,7 +436,7 @@ function generateVideo(storyAudioFile, storyId, options = {}) {
 // CLI 使用
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
     console.log(`
 Sleep Story Video Generator
@@ -450,7 +450,7 @@ Sleep Story Video Generator
   node generate-video.js sleep-story-2026-04-05.mp3
 
 环境变量:
-  SLEEP_STORY_OUTPUT_DIR         输出目录，默认：~/jnSleepStory
+  SLEEP_STORY_OUTPUT_DIR         输出目录，默认：~/sleepStory
   SLEEP_STORY_VIDEO_WIDTH        视频宽度，默认：1920
   SLEEP_STORY_VIDEO_HEIGHT       视频高度，默认：1080
   SLEEP_STORY_VIDEO_FPS          视频帧率，默认：30
@@ -469,15 +469,15 @@ Sleep Story Video Generator
 `);
     process.exit(1);
   }
-  
+
   const audioFile = args[0];
   const storyId = args[1] || 'sleep-story';
-  
+
   if (!fs.existsSync(audioFile)) {
     console.error(`错误：文件不存在：${audioFile}`);
     process.exit(1);
   }
-  
+
   const result = generateVideo(audioFile, storyId);
   process.exit(result ? 0 : 1);
 }

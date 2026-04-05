@@ -19,11 +19,11 @@ const { generateVideo, checkFfmpeg } = require('./generate-video');
 // 配置
 const CONFIG = {
   // 输出目录
-  outputDir: process.env.SLEEP_STORY_OUTPUT_DIR || path.join(process.env.HOME, 'jnSleepStory'),
-  
+  outputDir: process.env.SLEEP_STORY_OUTPUT_DIR || path.join(process.env.HOME, 'sleepStory'),
+
   // 生成模式：audio | video | both
   mode: process.env.SLEEP_STORY_MODE || 'audio', // 默认仅音频
-  
+
   // TTS 配置
   tts: {
     engine: process.env.SLEEP_STORY_TTS_ENGINE || 'auto', // auto 自动选择
@@ -36,7 +36,7 @@ const CONFIG = {
     // macOS say 语速（更慢，助眠放松）
     sayRate: parseInt(process.env.SLEEP_STORY_SAY_RATE || '100'),
   },
-  
+
   // 视频配置（可选）
   video: {
     background: process.env.SLEEP_STORY_BACKGROUND || 'gradient',
@@ -48,21 +48,21 @@ const CONFIG = {
  */
 function checkTTSEngine() {
   console.log('🔍 检查 TTS 引擎...');
-  
+
   const hasEdge = checkEdgeTTS();
   const hasSay = checkSay();
-  
+
   if (hasEdge) {
     console.log('✅ Edge TTS 可用 (微软 Neural，推荐)');
     console.log(`   语音：${CONFIG.tts.edgeVoice} (晓晓)`);
     console.log(`   语速：${CONFIG.tts.edgeRate} (非常慢，助眠放松)`);
   }
-  
+
   if (hasSay) {
     console.log('✅ macOS say 可用 (备用方案)');
     console.log(`   语音：${CONFIG.tts.sayVoice}`);
   }
-  
+
   if (!hasEdge && !hasSay) {
     console.error('❌ 错误：没有可用的 TTS 引擎');
     console.error('');
@@ -72,7 +72,7 @@ function checkTTSEngine() {
     console.error('');
     return null;
   }
-  
+
   console.log('');
   return hasEdge ? 'edge' : 'say';
 }
@@ -82,7 +82,7 @@ function checkTTSEngine() {
  */
 function checkFfmpegStatus() {
   const hasFfmpeg = checkFfmpeg();
-  
+
   if (hasFfmpeg) {
     try {
       const version = require('child_process').execSync('ffmpeg -version', { encoding: 'utf8', stdio: 'pipe' }).split('\n')[0];
@@ -96,7 +96,7 @@ function checkFfmpegStatus() {
     console.log('   提示：仅生成音频不需要 ffmpeg');
   }
   console.log('');
-  
+
   return hasFfmpeg;
 }
 
@@ -109,7 +109,7 @@ async function generateMedia(storyText, storyId, options = {}) {
     video: null,
     success: false,
   };
-  
+
   console.log('\n🌙 Sleep Story Media Generator');
   console.log('================================\n');
   console.log(`故事 ID: ${storyId}`);
@@ -117,34 +117,34 @@ async function generateMedia(storyText, storyId, options = {}) {
   console.log(`生成模式：${CONFIG.mode}`);
   console.log(`输出目录：${CONFIG.outputDir}`);
   console.log('');
-  
+
   // 确保输出目录存在
   if (!fs.existsSync(CONFIG.outputDir)) {
     fs.mkdirSync(CONFIG.outputDir, { recursive: true });
     console.log(`✅ 创建输出目录：${CONFIG.outputDir}\n`);
   }
-  
+
   // Step 1: 生成音频（必须）
   console.log('📢 Step 1: 生成音频 (优先保证有声音)');
   console.log('-------------------------------------');
-  
+
   // 检查 TTS 引擎
   const engine = checkTTSEngine();
-  
+
   if (!engine) {
     console.error('❌ 无法生成音频：没有可用的 TTS 引擎\n');
     return results;
   }
-  
+
   // 设置音频配置
   process.env.SLEEP_STORY_TTS_ENGINE = engine;
   process.env.SLEEP_STORY_EDGE_VOICE = CONFIG.tts.edgeVoice;
   process.env.SLEEP_STORY_EDGE_RATE = CONFIG.tts.edgeRate;
   process.env.SLEEP_STORY_SAY_VOICE = CONFIG.tts.sayVoice;
   process.env.SLEEP_STORY_SAY_RATE = CONFIG.tts.sayRate.toString();
-  
+
   const audioFile = await generateAudio(storyText, storyId);
-  
+
   if (audioFile) {
     results.audio = audioFile;
     console.log(`✅ 音频生成完成：${path.basename(audioFile)}\n`);
@@ -152,25 +152,25 @@ async function generateMedia(storyText, storyId, options = {}) {
     console.error('❌ 音频生成失败，无法继续\n');
     return results;
   }
-  
+
   // Step 2: 生成视频（可选）
   if (CONFIG.mode === 'video' || CONFIG.mode === 'both') {
     console.log('🎬 Step 2: 生成视频 (可选)');
     console.log('-----------------------------------------');
-    
+
     const hasFfmpeg = checkFfmpegStatus();
-    
+
     if (!hasFfmpeg) {
       console.log('⚠️  ffmpeg 未安装，跳过视频生成');
       console.log('💡 提示：音频已生成，可正常使用\n');
     } else {
       // 设置视频配置
       process.env.SLEEP_STORY_BACKGROUND = CONFIG.video.background;
-      
+
       const videoFile = generateVideo(audioFile, storyId, {
         background: CONFIG.video.background,
       });
-      
+
       if (videoFile) {
         results.video = videoFile;
         console.log(`✅ 视频生成完成：${path.basename(videoFile)}\n`);
@@ -179,14 +179,14 @@ async function generateMedia(storyText, storyId, options = {}) {
       }
     }
   }
-  
+
   // 总结
   results.success = !!(results.audio || results.video);
-  
+
   if (results.success) {
     console.log('✨ 生成完成！');
     console.log('================\n');
-    
+
     if (results.audio) {
       console.log(`📁 音频：${results.audio}`);
       console.log(`   - TTS 引擎：${engine === 'edge' ? 'Edge TTS (推荐)' : 'macOS say (备用)'}`);
@@ -197,13 +197,13 @@ async function generateMedia(storyText, storyId, options = {}) {
       console.log(`\n🎬 视频：${results.video}`);
       console.log(`   - 背景：${CONFIG.video.background}`);
     }
-    
+
     console.log('\n💡 播放建议:');
     console.log('   - 睡前 15-30 分钟开始播放');
     console.log('   - 音量调至舒适水平');
     console.log('   - 音频可闭眼聆听，视频可配合柔和背景');
     console.log('');
-    
+
     // 配置提示
     console.log('⚙️  配置选项:');
     console.log('   更换语音：--voice zh-CN-XiaoyiNeural (小艺)');
@@ -211,14 +211,14 @@ async function generateMedia(storyText, storyId, options = {}) {
     console.log('   强制引擎：--engine edge (Edge TTS) 或 --engine say (macOS)');
     console.log('');
   }
-  
+
   return results;
 }
 
 // CLI 使用
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
     console.log(`
 Sleep Story Media Generator
@@ -257,7 +257,7 @@ Sleep Story Media Generator
                           say: 强制使用 macOS say
   --background <类型>     视频背景 (gradient|stars)
                           默认：gradient
-  --output <目录>         输出目录，默认：~/jnSleepStory
+  --output <目录>         输出目录，默认：~/sleepStory
 
 环境变量:
   SLEEP_STORY_OUTPUT_DIR     输出目录
@@ -291,12 +291,12 @@ Edge TTS 可用语音:
 `);
     process.exit(1);
   }
-  
+
   // 解析参数
   const storyFile = args[0];
   let storyId = 'sleep-story';
   let i = 1;
-  
+
   while (i < args.length) {
     const arg = args[i];
     if (arg === '--mode' && args[i + 1]) {
@@ -334,14 +334,14 @@ Edge TTS 可用语音:
       i++;
     }
   }
-  
+
   if (!fs.existsSync(storyFile)) {
     console.error(`错误：文件不存在：${storyFile}`);
     process.exit(1);
   }
-  
+
   const storyText = fs.readFileSync(storyFile, 'utf8');
-  
+
   generateMedia(storyText, storyId).then(result => {
     process.exit(result.success ? 0 : 1);
   });

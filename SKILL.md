@@ -125,7 +125,7 @@ homepage: https://github.com/SoyooSkills/sleep-story
 - [个性化系统](references/personalization-system.md) - 偏好追踪和适配
 - [系列故事框架](references/series-story-framework.md) - 连续剧创作指南
 - [反馈循环系统](references/feedback-loop-system.md) - 效果追踪和优化
-- [多媒体生成指南](references/multimedia-guide.md) - 音频/视频生成详解
+- **多媒体生成** - 音频/视频命令与变量见本文「🎵 多媒体生成（音频/视频）」章节（与 `scripts` 一致；不再单独维护 `multimedia-guide.md`）
 - [用户偏好模板](memory/user-preferences.json.template) - 数据结构定义
 
 ---
@@ -495,12 +495,12 @@ node scripts/generate-media.js story.txt --voice zh-CN-XiaoyiNeural
 node scripts/generate-media.js story.txt --rate "-20%"
 
 # 输出目录
-node scripts/generate-media.js story.txt --output ~/jnSleepStory
+node scripts/generate-media.js story.txt --output ~/sleepStory
 ```
 
 **常用 Edge 中文语音（与脚本内说明一致）**：`zh-CN-XiaoxiaoNeural`（默认）、`zh-CN-XiaoyiNeural`、`zh-CN-LiaoniaNeural`、`zh-CN-YunxiNeural`、`zh-CN-YunyangNeural`。非 Neural 名称会按脚本逻辑归入 **say** 侧（如 `Mei-Jia`、`Ting-Ting`）。
 
-**详细文档**：详见 [references/multimedia-guide.md](references/multimedia-guide.md)（若与脚本冲突，**以 `generate-media.js` 与 `generate-audio.js` 为准**）。
+**详细文档**：见本节「TTS 策略」至「环境变量参考」；若与其他文档冲突，**以 `generate-media.js` 与 `generate-audio.js` 为准**。
 
 ### 视频与 BGM
 
@@ -527,20 +527,20 @@ choco install ffmpeg
 # 1. 创作故事并保存为纯文本或 .md
 # 2. 生成媒体（示例：音频 + 视频）
 cd ~/.openclaw/workspace/skills/sleep-story
-node scripts/generate-media.js ~/jnSleepStory/sleep-story-2026-04-05.md \
+node scripts/generate-media.js ~/sleepStory/sleep-story-2026-04-05.md \
   sleep-story-2026-04-05 \
   --mode both \
-  --output ~/jnSleepStory
+  --output ~/sleepStory
 
 # 3. 典型输出：{故事 ID}-{YYYY-MM-DD}.mp3 / .mp4（日期为运行当日，与 generate-audio / generate-video 一致）
-# 例如：~/jnSleepStory/sleep-story-2026-04-05-2026-04-05.mp3
+# 例如：~/sleepStory/sleep-story-2026-04-05-2026-04-05.mp3
 ```
 
 ### 环境变量参考（与 `generate-media.js` CONFIG 及视频合成一致）
 
 | 变量名                   | 说明                                  | 默认值                 |
 | ------------------------ | ------------------------------------- | ---------------------- |
-| `SLEEP_STORY_OUTPUT_DIR` | 输出目录                              | `~/jnSleepStory`       |
+| `SLEEP_STORY_OUTPUT_DIR` | 输出目录                              | `~/sleepStory`         |
 | `SLEEP_STORY_MODE`       | `audio` \| `video` \| `both`          | `audio`                |
 | `SLEEP_STORY_TTS_ENGINE` | `auto`（优先 Edge）\| `edge` \| `say` | `auto`                 |
 | `SLEEP_STORY_EDGE_VOICE` | Edge 语音名                           | `zh-CN-XiaoxiaoNeural` |
