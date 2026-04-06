@@ -26,15 +26,22 @@ const CONFIG = {
 
   // Edge TTS 配置（首选）
   edgeTTS: {
-    // 默认语音（温柔女声，助眠推荐）
+    // 默认语音（温柔女声，助眠/冥想推荐）
+    // 晓晓 (XiaoxiaoNeural)：温暖亲切，最适合助眠故事
+    // 小艺 (XiaoyiNeural)：更轻柔，适合冥想引导
     voice: process.env.SLEEP_STORY_EDGE_VOICE || 'zh-CN-XiaoxiaoNeural',
     // 语言
     lang: process.env.SLEEP_STORY_EDGE_LANG || 'zh-CN',
-    // 语速调整（-50% 到 +100%），助眠推荐更慢
-    // -25% = 非常慢，适合助眠放松
-    rate: process.env.SLEEP_STORY_EDGE_RATE || '-25%',
-    // 音调调整
-    pitch: process.env.SLEEP_STORY_EDGE_PITCH || '0%',
+    // 语速调整（-50% 到 +100%），助眠/冥想推荐极慢
+    // -35% = 极慢，适合深度放松、冥想、瑜伽
+    // -25% = 非常慢，适合普通助眠
+    // -15% = 较慢，适合日常故事
+    rate: process.env.SLEEP_STORY_EDGE_RATE || '-35%',
+    // 音调调整（-50% 到 +50%）
+    // -10% = 略低沉，更舒缓、更有催眠感
+    // 0% = 默认音调
+    // +5% = 略明亮，更温暖亲切
+    pitch: process.env.SLEEP_STORY_EDGE_PITCH || '-10%',
     // 音量调整
     volume: process.env.SLEEP_STORY_EDGE_VOLUME || '0%',
   },
@@ -159,9 +166,11 @@ function generateWithEdgeTTS(text, outputFile) {
   const volume = CONFIG.edgeTTS.volume;
 
   console.log(`使用微软 Edge TTS 生成音频...`);
-  console.log(`语音：${voice} (晓晓 - 温柔女声)`);
-  console.log(`语速：${rate} (非常慢，助眠放松)`);
+  console.log(`语音：${voice} (晓晓 - 温柔女声，冥想/助眠优化)`);
+  console.log(`语速：${rate} (极慢，深度放松/冥想/瑜伽)`);
+  console.log(`音调：${pitch} (略低沉，更舒缓催眠)`);
   console.log('💡 Neural 神经网络，最自然的声音');
+  console.log('🧘 配置优化：语速 -35% + 音调 -10% = 冥想级舒缓');
   console.log('');
 
   const processedText = preprocessText(text);
@@ -379,12 +388,14 @@ async function generateAudio(storyText, storyId, options = {}) {
     console.log('');
 
     if (engine === 'edge') {
-      console.log('🎯 Edge TTS 配置:');
-      console.log('   更换语音：--voice zh-CN-XiaoyiNeural (小艺)');
-      console.log('   调整语速：--rate "-20%" (更慢) 或 "--rate "+10%" (稍快)');
-      console.log('   可用语音：zh-CN-XiaoxiaoNeural (晓晓，默认)');
-      console.log('              zh-CN-XiaoyiNeural (小艺)');
-      console.log('              zh-CN-YunxiNeural (云希 - 男声)');
+      console.log('🎯 Edge TTS 配置 (冥想/助眠优化):');
+      console.log('   默认配置：语速 -35% + 音调 -10% = 深度放松');
+      console.log('   更换语音：--voice zh-CN-XiaoyiNeural (小艺，更轻柔)');
+      console.log('   调整语速：--rate "-40%" (更慢) 或 "-25%" (稍快)');
+      console.log('   调整音调：--pitch "-15%" (更低沉) 或 "-5%" (稍高)');
+      console.log('   可用语音：zh-CN-XiaoxiaoNeural (晓晓，默认，温暖亲切)');
+      console.log('              zh-CN-XiaoyiNeural (小艺，轻柔空灵)');
+      console.log('              zh-CN-YunxiNeural (云希，男声)');
       console.log('');
     }
 
@@ -430,7 +441,7 @@ Sleep Story Audio Generator
                           macOS say: Mei-Jia, Ting-Ting, Samantha
                           默认：zh-CN-XiaoxiaoNeural (Edge TTS)
   --rate <语速>           语速调整
-                          Edge TTS: -50% 到 +100%，默认：-15% (慢速)
+                          Edge TTS: -50% 到 +100%，默认：-35% (极慢，冥想/助眠)
                           macOS say: 100-180 字/分钟，默认：120
   --engine <引擎>         TTS 引擎
                           auto: 自动选择 (默认，优先 Edge TTS)
@@ -441,8 +452,9 @@ Sleep Story Audio Generator
 环境变量:
   SLEEP_STORY_OUTPUT_DIR      输出目录
   SLEEP_STORY_TTS_ENGINE      TTS 引擎 (auto|edge|say)，默认：auto
-  SLEEP_STORY_EDGE_VOICE      Edge TTS 语音，默认：zh-CN-XiaoxiaoNeural
-  SLEEP_STORY_EDGE_RATE       Edge TTS 语速，默认：-15%
+  SLEEP_STORY_EDGE_VOICE      Edge TTS 语音，默认：zh-CN-XiaoxiaoNeural (晓晓)
+  SLEEP_STORY_EDGE_RATE       Edge TTS 语速，默认：-35% (极慢，冥想/助眠)
+  SLEEP_STORY_EDGE_PITCH      Edge TTS 音调，默认：-10% (略低沉，更舒缓)
   SLEEP_STORY_SAY_VOICE       macOS say 语音，默认：Mei-Jia
   SLEEP_STORY_SAY_RATE        macOS say 语速，默认：120
 

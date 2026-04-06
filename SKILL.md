@@ -471,7 +471,7 @@ homepage: https://github.com/SoyooSkills/sleep-story
 
 ### 音频特点
 
-- **Edge（首选）**：默认 `zh-CN-XiaoxiaoNeural`（晓晓），语速默认 `-25%`（偏慢，助眠向）。
+- **Edge（首选）**：默认 `zh-CN-XiaoxiaoNeural`（晓晓），语速默认 **`-35%`**（极慢），音调 **`-10%`**（略低沉），冥想/瑜伽/深度助眠优化。
 - **macOS say（降级）**：默认语音 `Mei-Jia`，语速默认 **100** 字/分钟（偏慢）。
 - 文本会经 `generate-audio.js` 做轻量预处理以改善停顿（与脚本一致）。
 
@@ -491,14 +491,26 @@ node scripts/generate-media.js story.txt --mode both
 # Edge 语音示例（含 Neural 的名称会写入 Edge 配置）
 node scripts/generate-media.js story.txt --voice zh-CN-XiaoyiNeural
 
-# Edge 语速：百分比字符串，如 "-20%"（更慢）或 "+10%"（稍快）
-node scripts/generate-media.js story.txt --rate "-20%"
+# Edge 语速：百分比字符串，如 "-35%"（极慢，冥想）或 "-20%"（稍快）
+node scripts/generate-media.js story.txt --rate "-35%"
+
+# Edge 音调：如 "-10%"（更低沉，催眠）或 "-5%"（稍高）
+node scripts/generate-media.js story.txt --pitch "-10%"
 
 # 输出目录
 node scripts/generate-media.js story.txt --output ~/sleepStory
 ```
 
-**常用 Edge 中文语音（与脚本内说明一致）**：`zh-CN-XiaoxiaoNeural`（默认）、`zh-CN-XiaoyiNeural`、`zh-CN-LiaoniaNeural`、`zh-CN-YunxiNeural`、`zh-CN-YunyangNeural`。非 Neural 名称会按脚本逻辑归入 **say** 侧（如 `Mei-Jia`、`Ting-Ting`）。
+**常用 Edge 中文语音（与脚本内说明一致）**：
+- `zh-CN-XiaoxiaoNeural`（默认，温暖亲切，最适合助眠故事）
+- `zh-CN-XiaoyiNeural`（小艺，轻柔空灵，适合冥想引导）
+- `zh-CN-LiaoniaNeural`（辽宁口音，温暖接地气）
+- `zh-CN-YunxiNeural`（云希，男声）
+- `zh-CN-YunyangNeural`（云扬，男声，专业播报）
+
+**冥想/瑜伽推荐配置**：语速 `-35%` + 音调 `-10%` = 深度放松
+
+非 Neural 名称会按脚本逻辑归入 **say** 侧（如 `Mei-Jia`、`Ting-Ting`）。
 
 **详细文档**：见本节「TTS 策略」至「环境变量参考」；若与其他文档冲突，**以 `generate-media.js` 与 `generate-audio.js` 为准**。
 
@@ -544,7 +556,8 @@ node scripts/generate-media.js ~/sleepStory/sleep-story-2026-04-05.md \
 | `SLEEP_STORY_MODE`       | `audio` \| `video` \| `both`          | `audio`                |
 | `SLEEP_STORY_TTS_ENGINE` | `auto`（优先 Edge）\| `edge` \| `say` | `auto`                 |
 | `SLEEP_STORY_EDGE_VOICE` | Edge 语音名                           | `zh-CN-XiaoxiaoNeural` |
-| `SLEEP_STORY_EDGE_RATE`  | Edge 语速（如 `-25%`）                | `-25%`                 |
+| `SLEEP_STORY_EDGE_RATE`  | Edge 语速（如 `-35%`）                | `-35%`（极慢，冥想）   |
+| `SLEEP_STORY_EDGE_PITCH` | Edge 音调（如 `-10%`）                | `-10%`（略低沉）       |
 | `SLEEP_STORY_SAY_VOICE`  | macOS say 语音                        | `Mei-Jia`              |
 | `SLEEP_STORY_SAY_RATE`   | say 语速（字/分钟）                   | `100`                  |
 | `SLEEP_STORY_BACKGROUND` | 视频背景类型                          | `gradient`             |
